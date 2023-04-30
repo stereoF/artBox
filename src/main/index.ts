@@ -15,7 +15,10 @@ import icon from '../../resources/icon.png?asset'
 // }
 
 async function handleFileOpen() {
-  const { canceled, filePaths } = await dialog.showOpenDialog()
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
+  })
   if (canceled) {
   } else {
     return filePaths[0]
