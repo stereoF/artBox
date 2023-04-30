@@ -3,6 +3,25 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+// async function handleImgOpen() {
+//   const { canceled, filePaths } = await dialog.showOpenDialog({
+//     properties: ['openFile'],
+//     filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
+//   })
+//   if (canceled) {
+//   } else {
+//     return filePaths[0]
+//   }
+// }
+
+async function handleFileOpen() {
+  const { canceled, filePaths } = await dialog.showOpenDialog()
+  if (canceled) {
+  } else {
+    return filePaths[0]
+  }
+}
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -39,6 +58,7 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // ipcMain.handle('dialog:openImg', handleImgOpen)
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -49,23 +69,13 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  ipcMain.handle('dialog:openFile', handleFileOpen)
   createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
-  ipcMain.on('select-img', () => {
-    dialog
-      .showOpenDialog({
-        properties: ['openFile'],
-        filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
-      })
-      .catch((err) => {
-        console.log(err)
-      })
   })
 })
 

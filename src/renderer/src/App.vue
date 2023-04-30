@@ -30,13 +30,28 @@
     </a-layout-sider>
     <a-layout-content>
       <a-button type="primary" @click="selectImg">Select Image</a-button>
+      <p>
+        {{ filePath }}
+      </p>
     </a-layout-content>
   </a-layout>
 </template>
 
 <script lang="ts" setup>
-const selectImg = () => {
-  sysApi.selectImg()
+// import { ref } from 'vue'
+
+// let filePath = ref('')
+
+// console.log(filePath.value)
+
+// const selectImg = async () => {
+//   filePath.value = await window.sysApi.openImg()
+//   console.log(filePath.value)
+// }
+
+const selectImg = async () => {
+  const filePath = await window.electronAPI.openFile()
+  console.log(filePath)
 }
 </script>
 

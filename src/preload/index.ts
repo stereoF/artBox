@@ -10,8 +10,13 @@ const api = {}
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('sysApi', {
-      selectImg: () => ipcRenderer.send('select-img')
+    // contextBridge.exposeInMainWorld('sysApi', {
+    //   openImg: () => {
+    //     ipcRenderer.invoke('dialog:openImg')
+    //   }
+    // })
+    contextBridge.exposeInMainWorld('electronAPI', {
+      openFile: () => ipcRenderer.invoke('dialog:openFile')
     })
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
