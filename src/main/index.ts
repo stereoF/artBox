@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -55,6 +55,17 @@ app.whenReady().then(() => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+
+  ipcMain.on('select-img', () => {
+    dialog
+      .showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
 })
 

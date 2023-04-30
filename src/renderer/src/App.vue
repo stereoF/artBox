@@ -28,11 +28,17 @@
         </a-menu>
       </div>
     </a-layout-sider>
-    <a-layout-content>Content</a-layout-content>
+    <a-layout-content>
+      <a-button type="primary" @click="selectImg">Select Image</a-button>
+    </a-layout-content>
   </a-layout>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const selectImg = () => {
+  sysApi.selectImg()
+}
+</script>
 
 <style scoped>
 .menu-demo {
