@@ -20,6 +20,7 @@ async function handleFileOpen() {
     filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
   })
   if (canceled) {
+    return undefined
   } else {
     return filePaths[0]
   }

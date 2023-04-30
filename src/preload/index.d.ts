@@ -5,7 +5,7 @@ declare global {
     electron: ElectronAPI
     api: unknown
     electronAPI: {
-      openFile: () => Promise<string>
+      openFile: () => Promise<string|undefined>
     }
   }
 }
