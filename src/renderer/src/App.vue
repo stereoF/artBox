@@ -30,9 +30,6 @@
     </a-layout-sider>
     <a-layout-content>
       <a-button type="primary" @click="selectImg">Select Image</a-button>
-      <p>
-        {{ filePath }}
-      </p>
     </a-layout-content>
   </a-layout>
 </template>
