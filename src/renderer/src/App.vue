@@ -30,25 +30,28 @@
     </a-layout-sider>
     <a-layout-content>
       <a-button type="primary" @click="selectImg">Select Image</a-button>
+      <p>Image CID: {{ fileInfo.cid }}</p>
+      <!-- <img
+        :src="'data:image/png;base64,'+imgBase"
+        alt="The picture needs to signature"
+      /> -->
     </a-layout-content>
   </a-layout>
 </template>
 
 <script lang="ts" setup>
-// import { ref } from 'vue'
+import { reactive } from "vue";
 
-// let filePath = ref('')
-
-// console.log(filePath.value)
-
-// const selectImg = async () => {
-//   filePath.value = await window.sysApi.openImg()
-//   console.log(filePath.value)
-// }
+let fileInfo = reactive({
+  cid: "",
+  path: "",
+});
 
 const selectImg = async () => {
-  const filePath = await window.electronAPI.openFile()
-  console.log(filePath)
+  let fileInfo2 = await window.electronAPI.openFile();
+  fileInfo.cid = fileInfo2.cid;
+  fileInfo.path = fileInfo2.path;
+  // imgBase.value = fileInfo.content;
 }
 </script>
 

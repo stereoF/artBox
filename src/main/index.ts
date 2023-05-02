@@ -2,17 +2,10 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { useFileOperation } from './fileOperation'
+// import * as path from 'path';
 
-// async function handleImgOpen() {
-//   const { canceled, filePaths } = await dialog.showOpenDialog({
-//     properties: ['openFile'],
-//     filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
-//   })
-//   if (canceled) {
-//   } else {
-//     return filePaths[0]
-//   }
-// }
+let { getCID } = useFileOperation();
 
 async function handleFileOpen() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -22,7 +15,15 @@ async function handleFileOpen() {
   if (canceled) {
     return undefined
   } else {
-    return filePaths[0]
+    let filePath = filePaths[0];
+    // if (process.platform === 'win32') {
+    //   filePath = filePath.replace(/\\/g, '/');
+    // }
+    // console.log(readImgContent(filePath));
+    return {
+      path: filePath,
+      cid: await getCID(filePath)
+    }
   }
 }
 
