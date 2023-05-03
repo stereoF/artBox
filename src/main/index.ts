@@ -16,13 +16,15 @@ async function handleFileOpen() {
     return undefined
   } else {
     let filePath = filePaths[0];
-    // if (process.platform === 'win32') {
-    //   filePath = filePath.replace(/\\/g, '/');
-    // }
+    let srcPath = filePath;
+    if (process.platform === 'win32') {
+      srcPath = filePath.replace(/\\/g, '/');
+    }
     // console.log(readImgContent(filePath));
     return {
       path: filePath,
-      cid: await getCID(filePath)
+      cid: await getCID(filePath),
+      srcPath: srcPath
     }
   }
 }
@@ -37,7 +39,8 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      webSecurity: false,
     }
   })
 

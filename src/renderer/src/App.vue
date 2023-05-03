@@ -31,10 +31,10 @@
     <a-layout-content>
       <a-button type="primary" @click="selectImg">Select Image</a-button>
       <p>Image CID: {{ fileInfo.cid }}</p>
-      <!-- <img
-        :src="'data:image/png;base64,'+imgBase"
+      <img
+        :src="'file://' + fileInfo.srcPath"
         alt="The picture needs to signature"
-      /> -->
+      />
     </a-layout-content>
   </a-layout>
 </template>
@@ -45,12 +45,14 @@ import { reactive } from "vue";
 let fileInfo = reactive({
   cid: "",
   path: "",
+  srcPath: "",
 });
 
 const selectImg = async () => {
   let fileInfo2 = await window.electronAPI.openFile();
   fileInfo.cid = fileInfo2.cid;
   fileInfo.path = fileInfo2.path;
+  fileInfo.srcPath = fileInfo2.srcPath;
   // imgBase.value = fileInfo.content;
 }
 </script>
