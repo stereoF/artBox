@@ -12,9 +12,15 @@
           <a-sub-menu key="0">
             <template #icon><icon-apps></icon-apps></template>
             <template #title>Quantum Keys</template>
-            <a-menu-item key="0_0">PublicKey Generation</a-menu-item>
-            <a-menu-item key="0_1">Digital Signature</a-menu-item>
-            <a-menu-item key="0_2">Verify Signature</a-menu-item>
+            <a-menu-item key="0_0">
+              <router-link to="/pkGen"> PublicKey Generation</router-link>
+            </a-menu-item>
+            <a-menu-item key="0_1">
+              <router-link to="/digiSign">Digital Signature</router-link>
+            </a-menu-item>
+            <a-menu-item key="0_2">
+              <router-link to="/verifySign">Verify Signature</router-link>
+            </a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="1">
             <template #icon><icon-bug></icon-bug></template>
@@ -24,45 +30,16 @@
             <a-menu-item key="1_2">Dall-E</a-menu-item>
             <a-menu-item key="1_3">InfMonkeys</a-menu-item>
           </a-sub-menu>
-          <a-menu-item key="3">Settings</a-menu-item>
+          <a-menu-item key="3">
+            <router-link to="/settings">Settings</router-link>
+          </a-menu-item>
         </a-menu>
       </div>
     </a-layout-sider>
     <a-layout-content>
-      <a-button type="primary" @click="selectImg">Select Image</a-button>
-      <p>Image CID: {{ fileInfo.cid }}</p>
-      <img
-        :src="'file://' + fileInfo.srcPath"
-        alt="The picture needs to signature"
-      />
+      <a-layout-header>Header</a-layout-header>
+      <router-view></router-view>
+      <a-layout-footer>Footer</a-layout-footer>
     </a-layout-content>
   </a-layout>
 </template>
-
-<script lang="ts" setup>
-import { reactive } from "vue";
-
-let fileInfo = reactive({
-  cid: "",
-  path: "",
-  srcPath: "",
-});
-
-const selectImg = async () => {
-  let fileInfo2 = await window.electronAPI.openFile();
-  fileInfo.cid = fileInfo2.cid;
-  fileInfo.path = fileInfo2.path;
-  fileInfo.srcPath = fileInfo2.srcPath;
-  // imgBase.value = fileInfo.content;
-}
-</script>
-
-<style scoped>
-.menu-demo {
-  box-sizing: border-box;
-  width: 100%;
-  height: 600px;
-  /* padding: 40px; */
-  background-color: var(--color-neutral-2);
-}
-</style>

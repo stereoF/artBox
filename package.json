@@ -23,7 +23,8 @@
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
     "electron-updater": "^5.3.0",
-    "ipfs-only-hash": "^4.0.0"
+    "ipfs-only-hash": "^4.0.0",
+    "vue-router": "4.0.0-beta.13"
   },
   "devDependencies": {
     "@arco-design/web-vue": "^2.45.3",
