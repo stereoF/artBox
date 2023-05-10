@@ -1,10 +1,12 @@
 <template>
   <a-button type="primary" @click="selectImg">Select Image</a-button>
-  <p>Image CID: {{ fileInfo.cid }}</p>
-  <img
-    :src="'file://' + fileInfo.srcPath"
-    alt="The picture needs to signature"
-  />
+  <div v-if="fileInfo.cid != ''">
+    <p>Image CID: {{ fileInfo.cid }}</p>
+    <img
+      :src="'file://' + fileInfo.srcPath"
+      alt="The picture needs to signature"
+    />
+  </div>
 </template>
 
 <script lang="ts" setup>

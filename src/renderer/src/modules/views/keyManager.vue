@@ -1,10 +1,10 @@
 <template>
-<p>Digital Signature</p>
+<p>PublicKey Generation</p>
 </template>
 
 <script>
 export default {
-  name: "digiSign"
+  name: "pkGen"
 }
 </script>
 
