@@ -17,20 +17,23 @@
           <a-sub-menu key="1">
             <template #title>AIGC</template>
             <a-menu-item key="1_0">
-              <a-link href="https://stablediffusionweb.com/"
-                >StableDiffusion</a-link
+              <a-link target="_blank" href="https://stablediffusionweb.com/"
+              >StableDiffusion</a-link
               >
+<!--              <router-link to="/stableDiffusion">StableDiffusion</router-link>-->
             </a-menu-item>
             <a-menu-item key="1_1">
-              <a-link href="https://www.midjourney.com/home/"
-                >MidJourney</a-link
+              <a-link target="_blank" href="https://www.midjourney.com/home/"
+              >MidJourney</a-link
               >
+<!--              <router-link to="/midJourney">MidJourney</router-link>-->
             </a-menu-item>
             <a-menu-item key="1_2">
-              <a-link href="https://openai.com/product/dall-e-2">Dall-E</a-link>
+              <a-link target="_blank" href="https://openai.com/product/dall-e-2" >Dall-E</a-link>
+<!--              <router-link to="/dallE">Dall-E</router-link>-->
             </a-menu-item>
             <a-menu-item key="1_3">
-              <a-link href="https://frame.infmonkeys.com/">InfMonkeys</a-link>
+              <a-link target="_blank" href="https://frame.infmonkeys.com/">InfMonkeys</a-link>
             </a-menu-item>
           </a-sub-menu>
         </a-menu>
