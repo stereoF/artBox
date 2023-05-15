@@ -4,13 +4,14 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { useFileOperation } from './fileOperation'
 // import * as path from 'path';
+import fs from "fs";
 
-let { getCID } = useFileOperation();
+let { getCID,readImgContent } = useFileOperation();
 
 async function handleFileOpen() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
-    filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
+    filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif','jpeg'] }]
   })
   if (canceled) {
     return undefined
@@ -24,7 +25,8 @@ async function handleFileOpen() {
     return {
       path: filePath,
       cid: await getCID(filePath),
-      srcPath: srcPath
+      srcPath: srcPath,
+      content: await readImgContent(filePath)
     }
   }
 }
@@ -40,6 +42,7 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
+      nodeIntegration: true, // 使渲染进程拥有node环境
       webSecurity: false,
     }
   })
@@ -98,3 +101,16 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('asynchronous-message', function(event, arg) {
+  // arg是从渲染进程返回来的数据
+  console.log(event)
+  console.log(arg)
+  fs.writeFile(arg,JSON.stringify(arg), "utf8",(err)=>{
+    if(err){
+      console.log("写入失败")
+    }else {
+      console.log("写入成功")
+    }
+  })
+});

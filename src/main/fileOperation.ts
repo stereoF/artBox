@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as Hash from 'ipfs-only-hash'; 
+import * as Hash from 'ipfs-only-hash';
 
 
 function readImgContent(path: string) {
@@ -15,11 +15,14 @@ async function getCID(path: string) {
     return cid
 }
 
+function writeImgContent(path: string, data: string) {
+  fs.writeFileSync(path, data);
+}
 
 export function useFileOperation() {
-
     return {
         readImgContent,
-        getCID
+        getCID,
+        writeImgContent
     }
 }

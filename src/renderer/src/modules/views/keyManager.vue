@@ -10,7 +10,6 @@
 // import { reactive } from "vue";
 import { ethers } from "ethers";
 
-
 let privateKeys = [
   "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7",
   "ed8b76f4de88432ed45aa3ec420af4d48ea1f46a0175f345662f915b198b94d5",
@@ -22,7 +21,6 @@ let publicKeys = privateKeys.map((privateKey) => {
   let publicKey = signer.address;
   return publicKey;
 });
-
 </script>
 
 <style scoped></style>
