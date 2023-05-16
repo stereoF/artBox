@@ -42,7 +42,6 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      nodeIntegration: true, // 使渲染进程拥有node环境
       webSecurity: false,
     }
   })
@@ -102,15 +101,15 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
 
-ipcMain.on('asynchronous-message', function(event, arg) {
+ipcMain.on('saveFile', function(event, arg) {
   // arg是从渲染进程返回来的数据
-  console.log(event)
-  console.log(arg)
-  fs.writeFile(arg,JSON.stringify(arg), "utf8",(err)=>{
+  fs.writeFile(arg.fileName,arg.data,(err)=>{
     if(err){
       console.log("写入失败")
     }else {
       console.log("写入成功")
     }
   })
+
+
 });

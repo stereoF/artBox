@@ -7,20 +7,17 @@
       :src="'file://' + fileInfo.srcPath"
       alt="The picture needs to signature"
     />
+    <div v-if="signInfo.sign != ''">
+      <p> sign: {{ signInfo.sign }} </p>
+      <p> path: {{ signInfo.filePath }} </p>
+    </div>
+  </div>
 
-  </div>
-  <div v-if="signInfo.sign != ''">
-    <p> sign: {{ signInfo.sign }} </p>
-    <p> path: {{ signInfo.filePath }} </p>
-  </div>
 </template>
 
 <script lang="ts" setup>
 import {reactive} from "vue";
 import {ethers} from "ethers";
-import {useFileOperation} from "../../../../main/fileOperation";
-import * as fs from 'fs';
-let { writeImgContent } = useFileOperation();
 
 let fileInfo = reactive({
   cid: "",
@@ -33,6 +30,15 @@ let signInfo = reactive({
   filePath: "",
 });
 
+function stringToUint8Array(str){
+  var arr = [];
+  for (var i = 0, j = str.length; i < j; ++i) {
+    arr.push(str.charCodeAt(i));
+  }
+  var tmpUint8Array = new Uint8Array(arr);
+  return tmpUint8Array
+}
+
 const selectImg = async () => {
   let fileInfo2 = await window.electronAPI.openFile();
   console.log(fileInfo2)
@@ -40,7 +46,8 @@ const selectImg = async () => {
   fileInfo.path = fileInfo2.path;
   fileInfo.srcPath = fileInfo2.srcPath;
   fileInfo.content = fileInfo2.content;
-  signInfo = {sign: '', filePath: ''};
+  signInfo.sign = '';
+  signInfo.filePath = '';
   // imgBase.value = fileInfo.content;
 };
 
@@ -50,13 +57,19 @@ const signImg = async () => {
   let signer = new ethers.Wallet(privateKey);
   let sign = await signer.signMessage(fileInfo.cid + timestmp);
   signInfo.sign = sign
-  let data = fileInfo.content + sign;
-  console.log("data:", data)
+  console.log(fileInfo.content)
+
+  let signData = stringToUint8Array(sign);
+  let mergeData = new Uint8Array(fileInfo.content.length+signData.length)
+  mergeData.set(fileInfo.content);
+  mergeData.set(signData, fileInfo.content.length)
   let extindex = fileInfo.path.lastIndexOf(".");
   signInfo.filePath = fileInfo.path.substring(0, extindex) + "-sig" + fileInfo.path.substring(extindex);
-  console.log(signInfo);
-  writeImgContent(signInfo.filePath, data)
+
+  window.electronAPI.saveFile(signInfo.filePath, mergeData);
 };
+
+
 </script>
 
 <style scoped>
