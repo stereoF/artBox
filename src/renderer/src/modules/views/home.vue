@@ -1,6 +1,7 @@
 <template>
   <a-button type="primary" @click="selectImg">Select Image</a-button>
   <a-button v-if="fileInfo.cid != '' && signInfo.sign.length == 0" type="button" @click="signImg">Sign Image</a-button>
+  <a-button v-if="fileInfo.cid != ''" type="button" @click="verifySign">Verify Sign</a-button>
   <div v-if="fileInfo.cid != ''">
     <p>Image CID: {{ fileInfo.cid }}</p>
     <img
@@ -51,23 +52,71 @@ const selectImg = async () => {
   // imgBase.value = fileInfo.content;
 };
 
+function getSignFileName(srcName: string){
+  let extindex = srcName.lastIndexOf(".");
+  return srcName.substring(0, extindex) + "-sig" + srcName.substring(extindex);
+}
+
 const signImg = async () => {
   let privateKey = "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7";
   let timestmp = Date.now();
   let signer = new ethers.Wallet(privateKey);
-  let sign = await signer.signMessage(fileInfo.cid + timestmp);
+  let message = fileInfo.cid + timestmp;
+  let sign = await signer.signMessage(message);
   signInfo.sign = sign
   console.log(fileInfo.content)
 
-  let signData = stringToUint8Array(sign);
+  let append = fileInfo.cid + "#" + timestmp + "#" + sign;
+  let signData = stringToUint8Array(append);
+  console.log(signData.length)
   let mergeData = new Uint8Array(fileInfo.content.length+signData.length)
   mergeData.set(fileInfo.content);
   mergeData.set(signData, fileInfo.content.length)
-  let extindex = fileInfo.path.lastIndexOf(".");
-  signInfo.filePath = fileInfo.path.substring(0, extindex) + "-sig" + fileInfo.path.substring(extindex);
+
+  signInfo.filePath = getSignFileName(fileInfo.path);
 
   window.electronAPI.saveFile(signInfo.filePath, mergeData);
 };
+
+/**
+ * 验证签名及地址
+ * @param {*} message 签名消息
+ * @param {*} signerAddress 签名地址即用户钱包地址
+ * @param {*} signature 签名后的字符串
+ * @returns
+ */
+const verifyMessage = async (message, signerAddress, signature) => {
+  const recoveredAddress = ethers.verifyMessage(message, signature);
+
+  return recoveredAddress === signerAddress;
+};
+
+function Uint8ArrayToString(fileData){
+  var dataString = "";
+  for (var i = 0; i < fileData.length; i++) {
+    dataString += String.fromCharCode(fileData[i]);
+  }
+  return dataString
+}
+
+const verifySign = async () => {
+  let privateKey = "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7";
+  let signer = new ethers.Wallet(privateKey);
+  let signerAddress = await signer.getAddress();
+
+  let signedFileName = getSignFileName(fileInfo.path);
+  let contentBuf = await window.electronAPI.readFile(signedFileName);
+  console.log("contentBuf",contentBuf);
+    let signBuffer = contentBuf.subarray(contentBuf.length-193, contentBuf.length);
+    let signString = Uint8ArrayToString(signBuffer);
+    console.log(signString);
+    let signArray = signString.split("#");
+    let cid = signArray[0];
+    let tmp = signArray[1];
+    let sign = signArray[2];
+    let verify = await verifyMessage(cid+tmp, signerAddress, sign);
+    console.log(verify)
+}
 
 
 </script>

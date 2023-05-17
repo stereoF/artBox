@@ -15,14 +15,9 @@ async function getCID(path: string) {
     return cid
 }
 
-function writeImgContent(path: string, data: string) {
-  fs.writeFileSync(path, data);
-}
-
 export function useFileOperation() {
     return {
         readImgContent,
         getCID,
-        writeImgContent
     }
 }

@@ -100,16 +100,19 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-
 ipcMain.on('saveFile', function(event, arg) {
   // arg是从渲染进程返回来的数据
-  fs.writeFile(arg.fileName,arg.data,(err)=>{
-    if(err){
+  fs.writeFile(arg.fileName, arg.data, (err) => {
+    if (err) {
       console.log("写入失败")
-    }else {
+    } else {
       console.log("写入成功")
     }
   })
+})
 
+ipcMain.handle('readFile', function(event, arg) {
+  let content = readImgContent(arg.fileName);
+  return content
+})
 
-});
