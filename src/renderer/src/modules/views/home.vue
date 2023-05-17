@@ -1,6 +1,6 @@
 <template>
   <a-button type="primary" @click="selectImg">Select Image</a-button>
-  <a-button v-if="fileInfo.cid != '' && signInfo.sign.length == 0" type="button" @click="signImg">Sign Image</a-button>
+  <a-button v-if="fileInfo.cid != '' && signInfo.sign.length == 0 && !isSignedFile(fileInfo.path)" type="button" @click="signImg">Sign Image</a-button>
   <a-button v-if="fileInfo.cid != ''" type="button" @click="verifySign">Verify Sign</a-button>
   <div v-if="fileInfo.cid != ''">
     <p>Image CID: {{ fileInfo.cid }}</p>
@@ -99,12 +99,25 @@ function Uint8ArrayToString(fileData){
   return dataString
 }
 
+function isSignedFile(fileName: string){
+  let filePre = fileName.substring(0, fileName.lastIndexOf("."));
+  if (filePre.endsWith("-sig")){
+    return true;
+  }
+  return false;
+}
+
 const verifySign = async () => {
   let privateKey = "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7";
   let signer = new ethers.Wallet(privateKey);
   let signerAddress = await signer.getAddress();
 
-  let signedFileName = getSignFileName(fileInfo.path);
+  let signedFileName = fileInfo.path;
+  /*check current if alreay signed
+  * if not signed file, get signed file*/
+  if (!isSignedFile(signedFileName)){
+    signedFileName = getSignFileName(fileInfo.path);
+  }
   let contentBuf = await window.electronAPI.readFile(signedFileName);
   console.log("contentBuf",contentBuf);
     let signBuffer = contentBuf.subarray(contentBuf.length-193, contentBuf.length);
