@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive} from "vue";
+import {reactive,h} from "vue";
 import {ethers} from "ethers";
 
 let fileInfo = reactive({
@@ -111,11 +111,15 @@ const verifySign = async () => {
     let signString = Uint8ArrayToString(signBuffer);
     console.log(signString);
     let signArray = signString.split("#");
+    if (signArray.length < 3){
+      return false;
+    }
     let cid = signArray[0];
     let tmp = signArray[1];
     let sign = signArray[2];
     let verify = await verifyMessage(cid+tmp, signerAddress, sign);
     console.log(verify)
+    return verify;
 }
 
 

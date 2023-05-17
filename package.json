@@ -23,6 +23,7 @@
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
     "@sveltejs/vite-plugin-svelte": "^2.2.0",
+    "ant-design-vue": "^3.2.20",
     "electron-updater": "^5.3.0",
     "ethers": "^6.3.0",
     "ipfs-only-hash": "^4.0.0",
