@@ -4,9 +4,9 @@ import { createRouter, createWebHashHistory } from "vue-router"
 // const login = () => import("../views/login")
 import home from '../views/home.vue';
 import keyManager from "../views/keyManager.vue";
-import stableDiffusion from "../views/stableDiffusion.vue";
-import midJourney from "../views/midJourney.vue";
-import dallE from "../views/dallE.vue";
+// import stableDiffusion from "../views/stableDiffusion.vue";
+// import midJourney from "../views/midJourney.vue";
+// import dallE from "../views/dallE.vue";
 
 const routes = [
   { path: "/", redirect: "/home" },
@@ -20,21 +20,26 @@ const routes = [
     name: "keyManager",
     component: keyManager
   },
+  // {
+  //   path: "/stableDiffusion",
+  //   name: "stableDiffusion",
+  //   component: stableDiffusion
+  // },
+  // {
+  //   path: "/midJourney",
+  //   name: "midJourney",
+  //   component: midJourney
+  // },
+  // {
+  //   path: "/dallE",
+  //   name: "dallE",
+  //   component: dallE
+  // },
   {
-    path: "/stableDiffusion",
-    name: "stableDiffusion",
-    component: stableDiffusion
+    path: '/serialPort',
+    name: 'serial-port',
+    component: () => import('../views/serialPort.vue')
   },
-  {
-    path: "/midJourney",
-    name: "midJourney",
-    component: midJourney
-  },
-  {
-    path: "/dallE",
-    name: "dallE",
-    component: dallE
-  }
 ]
 
 export const router = createRouter({
