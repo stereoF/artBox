@@ -19,6 +19,11 @@
 <script lang="ts" setup>
 import {reactive,h} from "vue";
 import {ethers} from "ethers";
+import { storeToRefs } from 'pinia'
+import { useKeysStore } from "../../store/keys";
+
+let store = useKeysStore();
+let { publicKey, serialNum } = storeToRefs(store);
 
 let fileInfo = reactive({
   cid: "",
@@ -63,6 +68,7 @@ const signImg = async () => {
   let signer = new ethers.Wallet(privateKey);
   let message = fileInfo.cid + timestmp;
   let sign = await signer.signMessage(message);
+  // let sign = await window.electronAPI.serialPortComm([0x4e, 0x4b, serialNum.value]);
   signInfo.sign = sign
   console.log(fileInfo.content)
 
