@@ -140,7 +140,8 @@ ipcMain.handle("dialog:openPort", function (event, arg) {
 });
 
 
-ipcMain.handle("dialog:serialPortComm", function (event, arg) {
+ipcMain.handle("dialog:serialPortComm", async function (event, arg) {
+
 
   // let port = new SerialPort({ path: arg.portPath, baudRate: 9600 }, function (
   //   err
@@ -163,9 +164,20 @@ ipcMain.handle("dialog:serialPortComm", function (event, arg) {
   let publicKey = "";
 
   port.on("data", function (data) {
-    console.log("Data: " + data.toString("hex"));
+    // console.log("Data: " + data.toString("hex"));
     publicKey = data.toString("hex");
+    // console.log(publicKey);
   });
+
+  while(true) {
+    if(publicKey != "") {
+      break;
+    }
+    await sleep(1000);
+  }
+
+  return publicKey;
+
 
   // port.close(function (err) {
   //   if (err) {
@@ -173,6 +185,11 @@ ipcMain.handle("dialog:serialPortComm", function (event, arg) {
   //   }
   //   console.log("close success");
   // });
-
-  return publicKey;
+  
 });
+
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}

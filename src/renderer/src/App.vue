@@ -12,10 +12,10 @@
             <router-link to="/home">Home</router-link>
           </a-menu-item>
           <a-menu-item key="0_0_1" data-obj="1">
-            <router-link to="/keyManager">Key Manager</router-link>
+            <router-link to="/serialPort">serialPort</router-link>
           </a-menu-item>
           <a-menu-item key="0_0_2" data-obj="2">
-            <router-link to="/serialPort">serialPort</router-link>
+            <router-link to="/keyManager">Key Manager</router-link>
           </a-menu-item>
           <a-sub-menu key="1">
             <template #title>AIGC</template>

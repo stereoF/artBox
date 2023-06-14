@@ -1,42 +1,35 @@
 <template>
-  <a-radio-group direction="vertical">
-    <a-radio v-for="publicKey in publicKeys" :value="publicKey">
-      {{ publicKey }}
-    </a-radio>
-  </a-radio-group>
-  <a-button type="primary" @click="send2Port">send to port</a-button>
+  <a-select
+    v-model="value"
+    :style="{ width: '320px' }"
+    placeholder="Please select ..."
+  >
+    <a-option v-for="item of 128" :value="item-1" :label="item.toString()" />
+  </a-select>
+  <a-button type="primary" @click="getPublicKey">get public key</a-button>
+  <div>
+    Your public key: {{ publicKey }}
+  </div>
 </template>
 
 <script lang="ts" setup>
-// import { reactive, ref } from "vue";
-// import { storeToRefs } from 'pinia';
-// import { useSerialPortStore } from "@renderer/store/serialPort";
-import { ethers } from "ethers";
+import { ref } from "vue";
+import { useKeysStore } from "@renderer/store/keys.ts";
 
-// let store = useSerialPortStore();
-// let { portPath } = storeToRefs(store);
+let store = useKeysStore();
 
-function send2Port() {
-  window.electronAPI.serialPortComm([0x4e,0x4b,0x127]);
+let value = ref(0);
+let publicKey = ref();
+
+async function getPublicKey() {
+  console.log(value.value);
+  let keyValue = await window.electronAPI.serialPortComm([0x4e, 0x4b, value.value]);
+  console.log(keyValue);
+  publicKey.value = keyValue;
+  store.setPublicKey(keyValue);
+  store.setSerialNum(value.value);
 }
 
-// function getAllKeys() {
-//   console.log(portPath.value);
-//   window.electronAPI.serialPortComm(portPath.value, [0x4e,0x4b,0x01]);
-// }
-
-
-let privateKeys = [
-  "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7",
-  "ed8b76f4de88432ed45aa3ec420af4d48ea1f46a0175f345662f915b198b94d5",
-  "da8a9b0cedfebb0ea13a984034815d637236abb03251457fc6504ff4df7aac22",
-];
-
-let publicKeys = privateKeys.map((privateKey) => {
-  let signer = new ethers.Wallet(privateKey);
-  let publicKey = signer.address;
-  return publicKey;
-});
 </script>
 
 <style scoped></style>

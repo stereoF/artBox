@@ -17,7 +17,7 @@ const port = new SerialPort({ path: "COM4", baudRate: 9600 }, function (err) {
 });
 
 // port.write(Buffer.from("4E 4B 00")); // 发送数据
-port.write(Buffer.from([0x4e,0x4b,0x00])); // 发送数据
+port.write(Buffer.from([0x52,0x50,1])); // 发送数据
 port.drain((err) => {
   if (err) {
     console.log("Error: ", err.message);
@@ -28,3 +28,5 @@ port.drain((err) => {
 port.on("data", function (data) {
   console.log("Data: " + data.toString("hex"));
 });
+
+
