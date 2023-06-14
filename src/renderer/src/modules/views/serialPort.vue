@@ -1,37 +1,47 @@
 <template>
-  <p>Serial Port</p>
-  <a-button type="primary" @click="listPorts">listPorts</a-button>
+  <a-button type="primary" @click="listPorts">List the serial ports</a-button>
+  <div v-if="portLength > 0">
+    <p>Serial Port</p>
+    <a-radio-group direction="vertical" v-model:model-value="selectedPort">
+      <a-radio v-for="port in portList" :value="port">
+        {{ port }}
+      </a-radio>
+    </a-radio-group>
+    <div>
+      <a-button type="primary" @click="openPort">open the port</a-button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-// import { SerialPort } from "serialport";
+import { reactive, ref } from "vue";
+import { useSerialPortStore } from "@renderer/store/serialPort";
 
-// async function listSerialPorts() {
-//   await SerialPort.list().then((ports, err) => {
-//     if (err) {
-//         console.log("err", err);
-//       return;
-//     } else {
-//     }
-//     console.log("ports", ports);
+let portList = reactive([]);
+let portLength = ref(portList.length);
+let selectedPort = ref("");
 
-//     if (ports.length === 0) {
-//         console.log("No ports discovered");
-//     }
+let store = useSerialPortStore();
 
-//     console.log("ports", ports);
-//   });
-// }
+const listPorts = async () => {
+  let ports = await window.electronAPI.listPort();
+  // console.log(ports);
+  portList = ports.map((port) => {
+    return port.path;
+  });
+  portLength.value = portList.length;
+};
 
+const openPort = async () => {
+  console.log(selectedPort.value);
+  // store.setPort(selectedPort.value);
+  await window.electronAPI.openPort(selectedPort.value);
+};
 
-async function listPorts() {
-//   listSerialPorts();
-//   setTimeout(listPorts, 2000);
-}
-
-// // Set a timeout that will check for new serialPorts every 2 seconds.
-// // This timeout reschedules itself.
-// setTimeout(listPorts, 2000);
-
-// listSerialPorts();
+// watch(
+//   () => selectedPort.value, (newVal, oldVal) => {
+//     // console.log(newVal, oldVal);
+//     store.setPort(newVal);
+//   }
+// )
 </script>

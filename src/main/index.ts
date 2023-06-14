@@ -5,7 +5,7 @@ import icon from "../../resources/icon.png?asset";
 import { useFileOperation } from "./fileOperation";
 // import * as path from 'path';
 import fs from "fs";
-// import { SerialPort } from "serialport";
+import { SerialPort } from "serialport";
 
 let { getCID, readImgContent } = useFileOperation();
 
@@ -30,6 +30,11 @@ async function handleFileOpen() {
       content: await readImgContent(filePath),
     };
   }
+}
+
+async function handlePortList() {
+  const list = await SerialPort.list();
+  return list;
 }
 
 function createWindow(): void {
@@ -117,3 +122,57 @@ ipcMain.handle("readFile", function (event, arg) {
   return content;
 });
 
+ipcMain.handle("dialog:listPort", handlePortList);
+
+let port = new SerialPort({ path: 'COM1', baudRate: 9600 });
+
+ipcMain.handle("dialog:openPort", function (event, arg) {
+  port = new SerialPort({ path: arg.portPath, baudRate: 9600 }, function (
+    err
+  ) {
+    if (err) {
+      console.log("Error: ", err.message);
+    }
+
+    console.log("open success");
+  });
+
+});
+
+
+ipcMain.handle("dialog:serialPortComm", function (event, arg) {
+
+  // let port = new SerialPort({ path: arg.portPath, baudRate: 9600 }, function (
+  //   err
+  // ) {
+  //   if (err) {
+  //     return console.log("Error: ", err.message);
+  //   }
+
+  //   console.log("open success");
+  // });
+
+  port.write(Buffer.from(arg.paramBytes)); // 发送数据
+  port.drain((err) => {
+    if (err) {
+      console.log("Error: ", err.message);
+    }
+    console.log("write success");
+  });
+
+  let publicKey = "";
+
+  port.on("data", function (data) {
+    console.log("Data: " + data.toString("hex"));
+    publicKey = data.toString("hex");
+  });
+
+  // port.close(function (err) {
+  //   if (err) {
+  //     return console.log("Error: ", err.message);
+  //   }
+  //   console.log("close success");
+  // });
+
+  return publicKey;
+});
