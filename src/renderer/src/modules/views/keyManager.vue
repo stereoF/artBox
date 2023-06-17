@@ -15,19 +15,22 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useKeysStore } from "@renderer/store/keys.ts";
+import { useStringParser } from "../../scripts/stringParser";
 
 let store = useKeysStore();
+let { toHexString } = useStringParser();
 
 let value = ref(0);
 let publicKey = ref();
 
 async function getPublicKey() {
-  console.log(value.value);
-  let keyValue = await window.electronAPI.serialPortComm([0x4e, 0x4b, value.value]);
-  console.log(keyValue);
-  publicKey.value = keyValue;
-  store.setPublicKey(keyValue);
+  let resultBytes = await window.electronAPI.serialPortComm([0x4e, 0x4b, value.value]);
+  let publicKeyString = toHexString(resultBytes);
+  // let publicKeyString = resultBytes.toString();
+  publicKey.value = publicKeyString;
+  store.setPublicKey(publicKeyString);
   store.setSerialNum(value.value);
+  store.setPublicKeyBytes(resultBytes);
 }
 
 </script>

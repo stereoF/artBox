@@ -19,6 +19,7 @@ if (process.contextIsolated) {
       openFile: () => ipcRenderer.invoke('dialog:openFile'),
       saveFile: (fileName, data) => ipcRenderer.send('saveFile', {fileName, data}),
       readFile: (fileName) => ipcRenderer.invoke('readFile', {fileName}),
+      getCID: (content) => ipcRenderer.invoke('dialog:getCID', {content}),
       listPort: () => ipcRenderer.invoke('dialog:listPort'),
       openPort: (portPath) => ipcRenderer.invoke('dialog:openPort', {portPath}),
       serialPortComm: (paramBytes) => ipcRenderer.invoke('dialog:serialPortComm', {paramBytes})

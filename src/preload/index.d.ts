@@ -8,6 +8,7 @@ declare global {
       openFile: () => Promise<any>,
       saveFile: (fileName: string, data: any) => void,
       readFile: (fileName: string) => Promise<any>,
+      getCID: (content: string) => Promise<any>,
       listPort: () => Promise<any>,
       openPort: (portPath: string) => void,
       serialPortComm: (portPath: string, paramBytes: any) => Promise<any>

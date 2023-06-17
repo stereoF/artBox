@@ -28,15 +28,18 @@
 
 <script lang="ts" setup>
 import { reactive, h } from "vue";
-import { ethers } from "ethers";
 import { storeToRefs } from "pinia";
 import { useKeysStore } from "../../store/keys";
+import { useQuantumWallet } from "../../scripts/quantumWallet";
+import { useStringParser } from "../../scripts/stringParser";
 // import { Message } from '@arco-design/web-vue';
 // import { message } from "ant-design-vue";
 import { Notification } from '@arco-design/web-vue';
 
 let store = useKeysStore();
-let { publicKey, serialNum } = storeToRefs(store);
+let { publicKey, serialNum, publicKeyBytes } = storeToRefs(store);
+let { signContent, verifyContent } = useQuantumWallet();
+let { Uint8ArrayToString, stringToUint8Array, hexToBytes } = useStringParser();
 
 let fileInfo = reactive({
   cid: "",
@@ -49,22 +52,14 @@ let signInfo = reactive({
   filePath: "",
 });
 
-function stringToUint8Array(str) {
-  var arr = [];
-  for (var i = 0, j = str.length; i < j; ++i) {
-    arr.push(str.charCodeAt(i));
-  }
-  var tmpUint8Array = new Uint8Array(arr);
-  return tmpUint8Array;
-}
-
 const selectImg = async () => {
   let fileInfo2 = await window.electronAPI.openFile();
-  console.log(fileInfo2);
-  fileInfo.cid = fileInfo2.cid;
+  // fileInfo.cid = fileInfo2.cid;
   fileInfo.path = fileInfo2.path;
   fileInfo.srcPath = fileInfo2.srcPath;
   fileInfo.content = fileInfo2.content;
+  let cid = await window.electronAPI.getCID(fileInfo.content);
+  fileInfo.cid = cid;
   signInfo.sign = "";
   signInfo.filePath = "";
   // imgBase.value = fileInfo.content;
@@ -76,18 +71,10 @@ function getSignFileName(srcName: string) {
 }
 
 const signImg = async () => {
-  let privateKey =
-    "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7";
   let timestmp = Date.now();
-  let signer = new ethers.Wallet(privateKey);
   let message = fileInfo.cid + timestmp;
-  let sign = await signer.signMessage(message);
-  let utf8Encode = new TextEncoder();
-  console.log(utf8Encode.encode(message));
-  console.log(utf8Encode.encode(fileInfo.cid));
-  // let sign = await window.electronAPI.serialPortComm([0x4e, 0x4b, serialNum.value]);
+  let sign = await signContent(message, serialNum.value);
   signInfo.sign = sign;
-  console.log(fileInfo.content);
 
   let append = fileInfo.cid + "#" + timestmp + "#" + sign;
   let signData = stringToUint8Array(append);
@@ -99,28 +86,38 @@ const signImg = async () => {
   signInfo.filePath = getSignFileName(fileInfo.path);
 
   window.electronAPI.saveFile(signInfo.filePath, mergeData);
+
+  Notification.info({
+    content: "Sign Success",
+    duration: 15000,
+  });
 };
 
-/**
- * 验证签名及地址
- * @param {*} message 签名消息
- * @param {*} signerAddress 签名地址即用户钱包地址
- * @param {*} signature 签名后的字符串
- * @returns
- */
-const verifyMessage = async (message, signerAddress, signature) => {
-  const recoveredAddress = ethers.verifyMessage(message, signature);
+// /**
+//  * 验证签名及地址
+//  * @param {*} message 签名消息
+//  * @param {*} signerAddress 签名地址即用户钱包地址
+//  * @param {*} signature 签名后的字符串
+//  * @returns
+//  */
+// const verifyMessage = async (message, signerAddress, signature) => {
+//   const recoveredAddress = ethers.verifyMessage(message, signature);
 
-  return recoveredAddress === signerAddress;
-};
+//   return recoveredAddress === signerAddress;
+// };
 
-function Uint8ArrayToString(fileData) {
-  var dataString = "";
-  for (var i = 0; i < fileData.length; i++) {
-    dataString += String.fromCharCode(fileData[i]);
+
+const verifyMessage = async (msg, publicKeyBytes, sign) => {
+  let signature = sign.split("-");
+  let signatureBytes = [];
+  for (let i = 0; i < signature.length; i++) {
+    signatureBytes.push(hexToBytes(signature[i]));
   }
-  return dataString;
-}
+
+  let isValid = await verifyContent(msg, publicKeyBytes, signatureBytes);
+
+  return isValid;
+};
 
 function isSignedFile(fileName: string) {
   let filePre = fileName.substring(0, fileName.lastIndexOf("."));
@@ -131,39 +128,45 @@ function isSignedFile(fileName: string) {
 }
 
 const verifySign = async () => {
-  let privateKey =
-    "93030c2db7ee1564b43693f99776a27112059dcd9c5cec8052f13444c991e0e7";
-  let signer = new ethers.Wallet(privateKey);
-  let signerAddress = await signer.getAddress();
-
-  let signedFileName = fileInfo.path;
   /*check current if alreay signed
    * if not signed file, get signed file*/
-  if (!isSignedFile(signedFileName)) {
-    signedFileName = getSignFileName(fileInfo.path);
+  if (!isSignedFile(fileInfo.path)) {
+    // signedFileName = getSignFileName(fileInfo.path);
+    Notification.warning({
+      content: "Please choose signed file",
+      duration: 15000,
+    });
+    return;
   }
-  let contentBuf = await window.electronAPI.readFile(signedFileName);
-  console.log("contentBuf", contentBuf);
-  let signBuffer = contentBuf.subarray(
-    contentBuf.length - 193,
-    contentBuf.length
-  );
+  let contentBuf = fileInfo.content;
+  // console.log("contentBuf", contentBuf);
+  let contentBuffer = contentBuf.subarray(0, contentBuf.length - 318);
+  let signBuffer = contentBuf.subarray(contentBuf.length - 318);
   let signString = Uint8ArrayToString(signBuffer);
-  console.log(signString);
   let signArray = signString.split("#");
   if (signArray.length < 3) {
-    return false;
+    Notification.warning({
+      content: "Not a valid signed file",
+      duration: 15000,
+    });
   }
+  let cidCheck = await window.electronAPI.getCID(contentBuffer);
   let cid = signArray[0];
+  if (cidCheck != cid) {
+    Notification.warning({
+      content: "CID is wrong",
+      duration: 15000,
+    });
+  }
   let tmp = signArray[1];
   let sign = signArray[2];
-  let verify = await verifyMessage(cid + tmp, signerAddress, sign);
-  console.log(verify);
+
+  let message = cid + tmp;
+  let verify = await verifyMessage(message, publicKeyBytes.value, sign);
   Notification.info({
     content: verify ? "Verify Success" : "Verify Failed",
     duration: 15000,
   });
-  return verify;
 };
 </script>
 

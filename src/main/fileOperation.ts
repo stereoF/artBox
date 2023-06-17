@@ -9,15 +9,14 @@ function readImgContent(path: string) {
     return content;
 }
 
-async function getCID(path: string) {
-    const base64Image = readImgContent(path);
-    const cid = await Hash.of(base64Image);
-    return cid
+async function getCID(content: string) {
+    const cid = await Hash.of(content);
+    return cid;
 }
 
 export function useFileOperation() {
     return {
         readImgContent,
-        getCID,
+        getCID
     }
 }

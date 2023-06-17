@@ -25,7 +25,7 @@ async function handleFileOpen() {
     // console.log(readImgContent(filePath));
     return {
       path: filePath,
-      cid: await getCID(filePath),
+      // cid: await getCID(filePath),
       srcPath: srcPath,
       content: await readImgContent(filePath),
     };
@@ -117,6 +117,11 @@ ipcMain.on("saveFile", function (event, arg) {
   });
 });
 
+ipcMain.handle("dialog:getCID", async function (event, arg) {
+  let cid = await getCID(arg.content);
+  return cid;
+});
+
 ipcMain.handle("readFile", function (event, arg) {
   let content = readImgContent(arg.fileName);
   return content;
@@ -161,22 +166,27 @@ ipcMain.handle("dialog:serialPortComm", async function (event, arg) {
     console.log("write success");
   });
 
-  let publicKey = "";
+  // let publicKeyString = "";
+  let resultBytes = [];
 
   port.on("data", function (data) {
     // console.log("Data: " + data.toString("hex"));
-    publicKey = data.toString("hex");
+    // publicKeyString = data.toString("hex");
+    resultBytes = data;
     // console.log(publicKey);
   });
 
   while(true) {
-    if(publicKey != "") {
+    // if(publicKeyString != "") {
+    //   break;
+    // }
+    if(resultBytes.length != 0) {
       break;
     }
     await sleep(1000);
   }
 
-  return publicKey;
+  return resultBytes;
 
 
   // port.close(function (err) {

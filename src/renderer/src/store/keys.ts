@@ -5,6 +5,7 @@ export const useKeysStore = defineStore({
     state: () => ({
         serialNum: 0,
         publicKey: '',
+        publicKeyBytes: []
     }),
     actions: {
         setSerialNum(serialNum: number) {
@@ -12,6 +13,9 @@ export const useKeysStore = defineStore({
         },
         setPublicKey(publicKey: string) {
             this.publicKey = publicKey;
+        },
+        setPublicKeyBytes(publicKeyBytes: number[]) {
+            this.publicKeyBytes = publicKeyBytes;
         }
     },
     getters: {
