@@ -1,5 +1,5 @@
 <template>
-  <a-button type="primary" @click="selectImg">Select Image</a-button>
+  <a-button type="primary" @click="selectImg">Select File</a-button>
   <a-button
     v-if="
       fileInfo.cid != '' &&
@@ -8,17 +8,25 @@
     "
     type="button"
     @click="signImg"
-    >Sign Image</a-button
+    >Sign File</a-button
   >
   <a-button v-if="fileInfo.cid != ''" type="button" @click="verifySign"
     >Verify Sign</a-button
   >
   <div v-if="fileInfo.cid != ''">
-    <p>Image CID: {{ fileInfo.cid }}</p>
-    <img
-      :src="'file://' + fileInfo.srcPath"
-      alt="The picture needs to signature"
-    />
+    <p>File CID: {{ fileInfo.cid }}</p>
+    <div v-if="fileInfo.fileType === 'jpg' || fileInfo.fileType === 'png' || fileInfo.fileType === 'gif' || fileInfo.fileType === 'jpeg'">
+      <img :src="'file://' + fileInfo.srcPath"/>
+    </div>
+    <div v-else-if="fileInfo.fileType === 'mp3' || fileInfo.fileType === 'wav' || fileInfo.fileType === 'ogg'">
+      <audio :src="'file://' + fileInfo.srcPath" controls></audio>
+    </div>
+    <div v-else-if="fileInfo.fileType === 'mp4' || fileInfo.fileType === 'avi' || fileInfo.fileType === 'mov'">
+      <video :src="'file://' + fileInfo.srcPath" controls></video>
+    </div>
+    <div v-else>
+      <p>File path: {{ fileInfo.srcPath }}</p>
+    </div>
     <div v-if="signInfo.sign != ''">
       <p>sign: {{ signInfo.sign }}</p>
       <p>path: {{ signInfo.filePath }}</p>
@@ -45,6 +53,7 @@ let fileInfo = reactive({
   cid: "",
   path: "",
   srcPath: "",
+  fileType: "",
   content: "",
 });
 let signInfo = reactive({
@@ -58,6 +67,7 @@ const selectImg = async () => {
   fileInfo.path = fileInfo2.path;
   fileInfo.srcPath = fileInfo2.srcPath;
   fileInfo.content = fileInfo2.content;
+  fileInfo.fileType = fileInfo2.fileType;
   let cid = await window.electronAPI.getCID(fileInfo.content);
   fileInfo.cid = cid;
   signInfo.sign = "";
