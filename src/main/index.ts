@@ -12,7 +12,7 @@ let { getCID, readImgContent } = useFileOperation();
 async function handleFileOpen() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
-    filters: [{ name: "Images", extensions: ["jpg", "png", "gif", "jpeg"] }],
+    // filters: [{ name: "Images", extensions: ["jpg", "png", "gif", "jpeg"] }],
   });
   if (canceled) {
     return undefined;
@@ -23,8 +23,10 @@ async function handleFileOpen() {
       srcPath = filePath.replace(/\\/g, "/");
     }
     // console.log(readImgContent(filePath));
+    let fileType = filePath.split('.').pop();
     return {
       path: filePath,
+      fileType: fileType,
       // cid: await getCID(filePath),
       srcPath: srcPath,
       content: await readImgContent(filePath),
