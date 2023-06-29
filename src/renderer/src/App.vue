@@ -47,7 +47,9 @@
       </div>
     </a-layout-sider>
     <a-layout-content>
-      <router-view></router-view>
+      <suspense>
+        <router-view></router-view>
+      </suspense>
     </a-layout-content>
   </a-layout>
 </template>

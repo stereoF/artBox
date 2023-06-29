@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <a-badge v-if="portStatus" status="success" text="port connected" />
+    <a-badge v-else status="danger" text="port disconnected" />
+  </div>
   <a-button type="primary" @click="selectImg">Select File</a-button>
   <a-button
     v-if="
@@ -13,6 +17,9 @@
   <a-button v-if="fileInfo.cid != ''" type="button" @click="verifySign"
     >Verify Sign</a-button
   >
+  <div>
+    Your public key: {{ publicKey }}
+  </div>
   <div v-if="fileInfo.cid != ''">
     <p>File CID: {{ fileInfo.cid }}</p>
     <div v-if="fileInfo.fileType === 'jpg' || fileInfo.fileType === 'png' || fileInfo.fileType === 'gif' || fileInfo.fileType === 'jpeg'">
@@ -35,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, h } from "vue";
+import { reactive, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useKeysStore } from "../../store/keys";
 import { useQuantumWallet } from "../../scripts/quantumWallet";
@@ -60,6 +67,9 @@ let signInfo = reactive({
   sign: "",
   filePath: "",
 });
+
+
+let portStatus = ref(await window.electronAPI.isPortOpen());
 
 const selectImg = async () => {
   let fileInfo2 = await window.electronAPI.openFile();

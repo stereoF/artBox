@@ -3,12 +3,12 @@ import { defineStore } from 'pinia'
 export const useSerialPortStore = defineStore({
     id: 'serialPort',
     state: () => ({
-        portPath: '',
+        selectedPort: '',
     }),
     actions: {
-        setPort(portPath: string) {
-            this.portPath = portPath;
-        }
+        setPort(selectedPort: string) {
+            this.selectedPort = selectedPort;
+        },
     },
     getters: {
 

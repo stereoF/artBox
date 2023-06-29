@@ -131,7 +131,7 @@ ipcMain.handle("readFile", function (event, arg) {
 
 ipcMain.handle("dialog:listPort", handlePortList);
 
-let port = new SerialPort({ path: 'COM1', baudRate: 9600 });
+let port = new SerialPort({ path: 'COM1', baudRate: 9600, autoOpen: false });
 
 ipcMain.handle("dialog:openPort", function (event, arg) {
   port = new SerialPort({ path: arg.portPath, baudRate: 9600 }, function (
@@ -144,6 +144,11 @@ ipcMain.handle("dialog:openPort", function (event, arg) {
     console.log("open success");
   });
 
+});
+
+
+ipcMain.handle("dialog:isPortOpen", function (event, arg) {
+  return port.isOpen;
 });
 
 

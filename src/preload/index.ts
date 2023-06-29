@@ -22,6 +22,7 @@ if (process.contextIsolated) {
       getCID: (content) => ipcRenderer.invoke('dialog:getCID', {content}),
       listPort: () => ipcRenderer.invoke('dialog:listPort'),
       openPort: (portPath) => ipcRenderer.invoke('dialog:openPort', {portPath}),
+      isPortOpen: () => ipcRenderer.invoke('dialog:isPortOpen'),
       serialPortComm: (paramBytes) => ipcRenderer.invoke('dialog:serialPortComm', {paramBytes})
     })
     contextBridge.exposeInMainWorld('api', api)

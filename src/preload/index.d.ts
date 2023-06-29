@@ -11,6 +11,7 @@ declare global {
       getCID: (content: string) => Promise<any>,
       listPort: () => Promise<any>,
       openPort: (portPath: string) => void,
+      isPortOpen: () => Promise<any>,
       serialPortComm: (portPath: string, paramBytes: any) => Promise<any>
     }
   }

@@ -1,4 +1,8 @@
 {
+"compilerOptions": {
+"target": "es2017",
+"module": "commonjs"
+},
   "files": [],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
   "include": [
